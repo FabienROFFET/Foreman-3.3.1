@@ -1,0 +1,198 @@
+1. Test connectivity : 
+
+nc -v -x192.12.237.1:8080  -xconnect keyserver.ubuntu.com 80
+
+nc -v -x192.12.237.1:8080  -xconnect keyring.debian.org 80
+
+2. How-to : 
+
+
+2.1. Download keys :
+
+
+wget http://archive.ubuntu.com/ubuntu/dists/focal-security/Release.gpg -P focal-security
+wget http://archive.ubuntu.com/ubuntu/dists/focal-updates/Release.gpg -P focal-updates
+wget http://archive.ubuntu.com/ubuntu/dists/focal/Release.gpg -P focal
+wget http://archive.ubuntu.com/ubuntu/dists/focal-security/Release  -P focal-security
+wget http://archive.ubuntu.com/ubuntu/dists/focal-updates/Release -P focal-updates
+wget http://archive.ubuntu.com/ubuntu/dists/focal/Release -P focal
+
+wget http://archive.ubuntu.com/ubuntu/dists/jammy-security/Release.gpg -P jammy-security
+wget http://archive.ubuntu.com/ubuntu/dists/jammy-updates/Release.gpg -P jammy-updates
+wget http://archive.ubuntu.com/ubuntu/dists/jammy/Release.gpg -P jammy
+wget http://archive.ubuntu.com/ubuntu/dists/jammy-security/Release -P jammy-security
+wget http://archive.ubuntu.com/ubuntu/dists/jammy-updates/Release -P jammy-updates
+wget http://archive.ubuntu.com/ubuntu/dists/jammy/Release -P jammy
+
+wget http://ftp.debian.org/debian/dists/buster/Release.gpg -P buster
+wget http://ftp.debian.org/debian/dists/buster/Release -P buster
+wget http://ftp.debian.org/debian/dists/buster-updates/Release.gpg -P buster-updates
+wget http://ftp.debian.org/debian/dists/buster-updates/Release -P buster-updates
+wget http://security.debian.org/debian-security/dists/buster/updates/Release.gpg  -P buster-security
+wget http://security.debian.org/debian-security/dists/buster/updates/Release -P buster-security
+
+
+
+2.2. Output RSA ID :
+gpg --verify ./buster/Release.gpg ./buster/Release  2>&1 | tee ./buster/rsa_id
+gpg --verify ./buster-security/Release.gpg ./buster-security/Release  2>&1 | tee ./buster-security/rsa_id
+gpg --verify ./buster-updates/Release.gpg ./buster-updates/Release  2>&1 | tee ./buster-updates/rsa_id
+
+gpg --verify ./focal/Release.gpg ./focal/Release  2>&1 | tee ./focal/rsa_id
+gpg --verify ./focal-security/Release.gpg ./focal-security/Release  2>&1 | tee ./focal-security/rsa_id
+gpg --verify ./focal-updates/Release.gpg ./focal-updates/Release  2>&1 | tee ./focal-updates/rsa_id
+
+gpg --verify ./jammy/Release.gpg ./jammy/Release  2>&1 | tee ./jammy/rsa_id
+gpg --verify ./jammy-security/Release.gpg ./jammy-security/Release  2>&1 | tee ./jammy-security/rsa_id
+gpg --verify ./jammy-updates/Release.gpg ./jammy-updates/Release  2>&1 | tee ./jammy-updates/rsa_id
+
+
+
+2.3. Retrieve public keys from a key server and exported in a txt format :
+
+# BUSTER
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyring.debian.org --recv-keys `cat ./buster/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./buster/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./buster/buster.Release.gpg
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyring.debian.org --recv-keys `cat ./buster-security/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./buster-security/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./buster-security/buster-security.Release.gpg
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyring.debian.org --recv-keys `cat ./buster-updates/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./buster-updates/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./buster-updates/buster-updates.Release.gpg
+
+
+
+# FOCAL
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyserver.ubuntu.com --recv-keys `cat ./focal/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./focal/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./focal/focal.Release.gpg
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyserver.ubuntu.com --recv-keys `cat ./focal-security/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./focal-security/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./focal-security/focal-security.Release.gpg
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyserver.ubuntu.com --recv-keys `cat ./focal-updates/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./focal-updates/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./focal-updates/focal-updates.Release.gpg
+
+
+
+# JAMMY
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyserver.ubuntu.com --recv-keys `cat ./jammy/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./jammy/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./jammy/jammy.Release.gpg
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyserver.ubuntu.com --recv-keys `cat ./jammy-security/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./jammy-security/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./jammy-security/jammy-security.Release.gpg
+
+gpg --keyserver-options http-proxy=proxy.Compagnyname.com:8080 --keyserver keyserver.ubuntu.com --recv-keys `cat ./jammy-updates/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq`
+
+gpg --armor --export `cat ./jammy-updates/rsa_id | grep "using RSA key ID" | awk -F' ' '{print $NF}' | sort | uniq` > ./jammy-updates/jammy-updates.Release.gpg
+
+
+
+
+2.4. Create a content-credential : 
+
+
+hammer content-credentials create --content-type gpg_key --path ./focal/focal.Release.gpg --name focal.Release.gpg --organization OPEN-HON
+
+hammer content-credentials create --content-type gpg_key --path ./focal-security/focal-security.Release.gpg --name focal-security.Release.gpg --organization OPEN-HON
+
+hammer content-credentials create --content-type gpg_key --path ./focal-updates/focal-updates.Release.gpg --name focal-updates.Release.gpg --organization OPEN-HON
+
+hammer content-credentials create --content-type gpg_key --path ./jammy/jammy.Release.gpg --name jammy.Release.gpg --organization OPEN-HON
+
+hammer content-credentials create --content-type gpg_key --path ./jammy-security/jammy-security.Release.gpg --name jammy-security.Release.gpg --organization OPEN-HON
+
+hammer content-credentials create --content-type gpg_key --path ./jammy-updates/jammy-updates.Release.gpg --name jammy-updates.Release.gpg --organization OPEN-HON
+
+
+
+2.5. Setup the GPG Key :
+
+Check filed : GPG KEY
+
+
+
+Step  2 :
+
+Generating Signing-Keys
+
+su pulp -s /bin/bash
+
+# this is necessary for GPG's pinentry to work.
+script /dev/null
+
+gpg --gen-key
+
+# export the public-key
+gpg --export --armor "Pulp QE"
+
+
+
+Create Signing-Script
+
+#!/bin/bash
+
+set -e
+
+RELEASE_FILE="$(/usr/bin/readlink -f $1)"
+OUTPUT_DIR="$(/usr/bin/mktemp -d)"
+DETACHED_SIGNATURE_PATH="${OUTPUT_DIR}/Release.gpg"
+INLINE_SIGNATURE_PATH="${OUTPUT_DIR}/InRelease"
+PUBLIC_KEY_PATH="${OUTPUT_DIR}/public.key"
+
+GPG_KEY_ID="Pulp QE"
+
+# Export a public key
+/usr/bin/gpg --armor --export "${GPG_KEY_ID}" > ${PUBLIC_KEY_PATH}
+
+COMMON_GPG_OPTS="--batch --armor --digest-algo SHA256"
+
+# Create a detached signature
+/usr/bin/gpg ${COMMON_GPG_OPTS} \
+  --detach-sign \
+  --output "${DETACHED_SIGNATURE_PATH}" \
+  --local-user "${GPG_KEY_ID}" \
+  "${RELEASE_FILE}"
+
+# Create an inline signature
+/usr/bin/gpg ${COMMON_GPG_OPTS} \
+  --clearsign \
+  --output "${INLINE_SIGNATURE_PATH}" \
+  --local-user "${GPG_KEY_ID}" \
+  "${RELEASE_FILE}"
+
+echo { \
+       \"public_key\": \"${PUBLIC_KEY_PATH}\", \
+       \"signatures\": { \
+         \"inline\": \"${INLINE_SIGNATURE_PATH}\", \
+         \"detached\": \"${DETACHED_SIGNATURE_PATH}\" \
+       } \
+     }
+
+Get add_signing_service Script :
+
+sudo -u pulp PULP_SETTINGS='/etc/pulp/settings.py' pulpcore-manager  add-signing-service   --class 'deb:AptReleaseSigningService'   katello_deb_sign "/var/lib/pulp/sign_deb_release.sh" 'Pulp QE'
+
+
+[root@az66u1971 pulp]# sudo -u pulp PULP_SETTINGS='/etc/pulp/settings.py' pulpcore-manager  add-signing-service   --class 'deb:AptReleaseSigningService'   katello_deb_sign "/var/lib/pulp/sign_deb_release.sh" 'Pulp QE'
+/opt/theforeman/tfm-pulpcore/root/usr/lib64/python3.8/site-packages/cryptography/hazmat/bindings/openssl/binding.py:173: CryptographyDeprecationWarning: OpenSSL version 1.0.2 is no longer supported by the OpenSSL project, please upgrade. The next version of cryptography will drop support for it.
+  warnings.warn(
+System check identified some issues:
+
+WARNINGS:
+?: (guardian.W001) Guardian authentication backend is not hooked. You can add this in settings as eg: `AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend', 'guardian.backends.ObjectPermissionBackend')`.
+Successfully added signing service katello_deb_sign for key F8A172E72483C0F82B2EAE7870570F6F50DA5CCE.
+
+
+
+
+
